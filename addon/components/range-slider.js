@@ -9,6 +9,8 @@ const {
   observer
 } = Ember;
 
+const SLIDER_EVENTS = Ember.A(['change', 'set', 'slide', 'update', 'start', 'end']);
+
 export default Ember.Component.extend({
   attributeBindings: ['disabledOrUndefined:disabled'],
   slider:       null,
@@ -55,14 +57,13 @@ export default Ember.Component.extend({
       'behaviour', 'animate', 'snap',
       'pips', 'format', 'tooltips'
     );
-    let sliderEvents = Ember.A(['change', 'set', 'slide', 'update', 'start', 'end']);
 
     noUiSlider.create($this, properties);
 
     let slider = $this.noUiSlider;
     this.set('slider', slider);
 
-    sliderEvents.forEach(event => {
+    SLIDER_EVENTS.forEach(event => {
       if (!isEmpty(this.get(`on-${event}`))) {
         slider.on(event, () => {
           run(this, function() {
@@ -94,12 +95,9 @@ export default Ember.Component.extend({
   teardown: on('willDestroyElement', function() {
     var slider = this.get('slider');
 
-    slider.off('change');
-    slider.off('slide');
-    slider.off('set');
-    slider.off('update');
-    slider.off('start');
-    slider.off('end');
+    SLIDER_EVENTS.forEach(event => {
+      slider.off(event);
+    });
 
     slider.destroy();
   }),
