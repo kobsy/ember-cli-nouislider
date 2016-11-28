@@ -13,7 +13,6 @@ const SLIDER_EVENTS = Ember.A(['change', 'set', 'slide', 'update', 'start', 'end
 
 export default Ember.Component.extend({
   attributeBindings: ['disabledOrUndefined:disabled'],
-  slider:       null,
   start:        undefined,
   step:         undefined,
   margin:       undefined,
@@ -27,6 +26,10 @@ export default Ember.Component.extend({
   direction:    'ltr',
   behaviour:    'tap',
   tooltips:     false,
+
+  slider: computed(function() {
+    return this.$() ? this.$().get(0).noUiSlider : null;
+  }).volatile(),
 
   min: 0,
   max: 100,
@@ -60,8 +63,7 @@ export default Ember.Component.extend({
 
     noUiSlider.create($this, properties);
 
-    let slider = $this.noUiSlider;
-    this.set('slider', slider);
+    let slider = this.get('slider');
 
     SLIDER_EVENTS.forEach(event => {
       if (!isEmpty(this.get(`on-${event}`))) {
